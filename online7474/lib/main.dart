@@ -1,39 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:online7474/new-screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online7474/Screens/counter-screen.dart';
+import 'package:online7474/Screens/new-screen.dart';
+import 'package:online7474/logic/counting_cubit.dart';
+import 'package:online7474/logic/data/dio-helper.dart';
+import 'package:online7474/logic/main-app-provider.dart';
+import 'package:online7474/logic/news/news_cubit.dart';
+import 'package:provider/provider.dart';
+
+import 'Screens/bbc-screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+// News App => News BBC => News api
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  var dioHelper  = DioImplementation();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiBlocProvider(providers: [
+      BlocProvider(create: (context)=> CountingCubit()),
+      BlocProvider(create: (context)=> NewsCubit(dioHelper)..NewsData())
+    ],
+    child:  MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
+
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: NewScreen(),
+      home: News(),
+    ),
     );
   }
 }
